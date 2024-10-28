@@ -7,6 +7,7 @@ import Register from './pages/Register';
 import Logout from './components/Logout';
 import Main from './pages/Main';
 import Home from './pages/Home';
+import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
 import Navbar from './components/Navbar';
 
@@ -32,6 +33,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Home />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             } 
           />
