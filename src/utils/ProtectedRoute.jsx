@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { REFRESH_TOKEN, ACCESS_TOKEN } from "../constants";
+import { AuthContext } from "../context/AuthContext";
 import api from "../api";
 
 function ProtectedRoute({ children }) {
     const [isAuthorized, setIsAuthorized] = useState(null);
+    const { logout } = useContext(AuthContext);
 
     useEffect(() => {
         auth().catch(() => setIsAuthorized(false))
@@ -56,7 +58,12 @@ function ProtectedRoute({ children }) {
         return <div>Loading...</div>
     }
 
-    return isAuthorized ? children : <Navigate to="/login" />;
+    if (isAuthorized) {
+        return children
+    } else {
+        logout()
+        return <Navigate to="/login" />
+    }
 
 }
 
