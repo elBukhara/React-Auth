@@ -5,6 +5,8 @@ import { REFRESH_TOKEN, ACCESS_TOKEN } from "../constants";
 import { AuthContext } from "../context/AuthContext";
 import api from "../api";
 
+const TOKEN_REFRESH_THRESHOLD = 5 * 60; // 5 minutes in seconds 
+
 function ProtectedRoute({ children }) {
     const [isAuthorized, setIsAuthorized] = useState(null);
     const { logout } = useContext(AuthContext);
@@ -46,8 +48,8 @@ function ProtectedRoute({ children }) {
         const tokenExpiration = decoded.exp
         const now = Date.now() / 1000 // in seconds
 
-        if (tokenExpiration < now) {
-            console.log("token expired, refreshing...")
+        if (tokenExpiration - now < TOKEN_REFRESH_THRESHOLD) {
+            console.log("Token is close to expiration, refreshing...")
             await refreshToken()
         } else {
             setIsAuthorized(true)
