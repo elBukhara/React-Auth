@@ -5,7 +5,8 @@ import { REFRESH_TOKEN, ACCESS_TOKEN } from "../constants";
 import { AuthContext } from "../context/AuthContext";
 import api from "../api";
 
-const TOKEN_REFRESH_THRESHOLD = 5 * 60; // 5 minutes in seconds 
+const TOKEN_REFRESH_THRESHOLD = 5 * 60; // 5 minutes in seconds
+const BACKGROUND_REFRESH_INTERVAL = 25 * 60 * 1000; // 25 minutes in milliseconds
 
 function ProtectedRoute({ children }) {
     const [isAuthorized, setIsAuthorized] = useState(null);
@@ -13,6 +14,17 @@ function ProtectedRoute({ children }) {
 
     useEffect(() => {
         auth().catch(() => setIsAuthorized(false))
+
+        // Background token refresh every 25 minutes
+        const intervalId = setInterval(() => {
+            
+            console.log("Refreshing token...");
+            refreshToken().catch(() => setIsAuthorized(false));
+
+        }, BACKGROUND_REFRESH_INTERVAL);
+
+        // Cleanup interval on unmount
+        return () => clearInterval(intervalId);
     }, [])
 
     const refreshToken = async () => {
